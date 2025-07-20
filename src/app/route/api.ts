@@ -2,8 +2,13 @@ import axios from "axios";
 
 const BASE_URL = "https://api.openbrewerydb.org/v1/breweries";
 
-export const fetchAllBreweries = async () => {
-  const res = await axios.get(BASE_URL);
+export const fetchAllBreweries = async (page = 1, perPage = 10) => {
+  const res = await axios.get(BASE_URL, {
+    params: {
+      page,
+      per_page: perPage,
+    },
+  });
   return res.data;
 };
 

@@ -2,7 +2,7 @@
 
 import { Map, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ViewMode } from '@/types/brewery';
+import { ViewMode } from '@/types/brasseries';
 
 interface ViewToggleProps {
   currentView: ViewMode;
@@ -22,13 +22,11 @@ export default function ToggleVue({
         size="sm"
         onClick={() => onViewChange('list')}
         disabled={disabled}
-        className={`
-          flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200
-          ${currentView === 'list' 
-            ? 'bg-background shadow text-foreground' 
+        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 ${
+          currentView === 'list'
+            ? 'bg-background shadow text-foreground'
             : 'text-muted-foreground hover:text-foreground'
-          }
-        `}
+        }`}
       >
         <List className="w-4 h-4" />
         <span className="font-medium">Liste</span>
@@ -39,13 +37,11 @@ export default function ToggleVue({
         size="sm"
         onClick={() => onViewChange('map')}
         disabled={disabled}
-        className={`
-          flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200
-          ${currentView === 'map' 
-            ? 'bg-background shadow text-foreground' 
+        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 ${
+          currentView === 'map'
+            ? 'bg-background shadow text-foreground'
             : 'text-muted-foreground hover:text-foreground'
-          }
-        `}
+        }`}
       >
         <Map className="w-4 h-4" />
         <span className="font-medium">Carte</span>
