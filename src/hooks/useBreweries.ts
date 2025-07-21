@@ -11,6 +11,7 @@ interface UseBreweriesReturn {
   searchBreweries: (filters: SearchFilters) => void;
   loadMore: () => void;
   refresh: () => void;
+  setPage: (page: number) => void; 
 }
 
 export const useBreweries = (): UseBreweriesReturn => {
@@ -20,70 +21,51 @@ export const useBreweries = (): UseBreweriesReturn => {
   const [pagination, setPagination] = useState<PaginationState>({
     page: 1,
     perPage: 20,
-    total: 0
+    total: 0,
   });
   const [currentFilters, setCurrentFilters] = useState<SearchFilters>({
     query: ''
   });
 
-  const fetchBreweries = useCallback(async (
-    filters: SearchFilters,
-    page: number = 1,
-    append: boolean = false
-  ) => {
-    setLoading(true);
-    setError(null);
+  const fetchBreweries = useCallback(
+    async (filters: SearchFilters, page: number = 1, append: boolean = false) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const params = new URLSearchParams();
-      
-      if (filters.query) {
-        params.append('by_name', filters.query);
-      }
-      if (filters.state) {
-        params.append('by_state', filters.state);
-      }
-      if (filters.city) {
-        params.append('by_city', filters.city);
-      }
-      if (filters.type) {
-        params.append('by_type', filters.type);
-      }
-      
-      params.append('page', page.toString());
-      params.append('per_page', pagination.perPage.toString());
+      try {
+        const params = new URLSearchParams();
+        if (filters.query) params.append('by_name', filters.query);
+        if (filters.state) params.append('by_state', filters.state);
+        if (filters.city) params.append('by_city', filters.city);
+        if (filters.type) params.append('by_type', filters.type);
 
-      const response = await fetch(`${API_BASE_URL}?${params}`);
-      
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        params.append('page', page.toString());
+        params.append('per_page', pagination.perPage.toString());
+
+        const response = await fetch(`${API_BASE_URL}?${params}`);
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+        const data: Brewery[] = await response.json();
+        const validBreweries = data.filter(brewery => brewery.latitude && brewery.longitude);
+
+        setBreweries(prev => append ? [...prev, ...validBreweries] : validBreweries);
+
+        setPagination(prev => ({
+          ...prev,
+          page,
+          total: data.length === pagination.perPage
+            ? (page + 1) * pagination.perPage // estimation
+            : page * pagination.perPage,
+        }));
+
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      } finally {
+        setLoading(false);
       }
-
-      const data: Brewery[] = await response.json();
-      
-      // Filter out breweries without coordinates for map view
-      const validBreweries = data.filter(brewery => 
-        brewery.latitude && brewery.longitude
-      );
-
-      if (append) {
-        setBreweries(prev => [...prev, ...validBreweries]);
-      } else {
-        setBreweries(validBreweries);
-      }
-
-      setPagination(prev => ({
-        ...prev,
-        page,
-        total: data.length === pagination.perPage ? (page * pagination.perPage + 1) : page * pagination.perPage
-      }));
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
-    } finally {
-      setLoading(false);
-    }
-  }, [pagination.perPage]);
+    },
+    [pagination.perPage]
+  );
 
   const searchBreweries = useCallback((filters: SearchFilters) => {
     setCurrentFilters(filters);
@@ -97,10 +79,14 @@ export const useBreweries = (): UseBreweriesReturn => {
   }, [fetchBreweries, currentFilters, pagination.page]);
 
   const refresh = useCallback(() => {
-    fetchBreweries(currentFilters, 1, false);
+    fetchBreweries(currentFilters, pagination.page, false);
+  }, [fetchBreweries, currentFilters, pagination.page]);
+
+  const setPage = useCallback((page: number) => {
+    setPagination(prev => ({ ...prev, page }));
+    fetchBreweries(currentFilters, page, false);
   }, [fetchBreweries, currentFilters]);
 
-  // Initial load
   useEffect(() => {
     fetchBreweries({ query: '' }, 1, false);
   }, []);
@@ -112,6 +98,7 @@ export const useBreweries = (): UseBreweriesReturn => {
     pagination,
     searchBreweries,
     loadMore,
-    refresh
+    refresh,
+    setPage,
   };
 };

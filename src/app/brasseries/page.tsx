@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { useToast } from '@/hooks/use-toast';
-import  ToggleVue  from '@/components/toggleVue';
-import  SearchBar  from '@/components/SearchBar';
-import  {BrasseriesCard}  from '@/components/BrasseriesCard';
-// import { BreweryMap } from '@/components/BreweryMap';
+import ToggleVue from '@/components/toggleVue';
+import SearchBar from '@/components/SearchBar';
+import { BrasseriesCard } from '@/components/BrasseriesCard';
+import { CarteBrasseries } from '@/components/CarteBrasseries';
 import { LoadingOverlay } from '@/components/loading';
+import { Pagination } from '@/components/pagination';
 
 import { useBreweries } from '@/hooks/useBreweries';
 import { Brewery, ViewMode } from '@/types/brasseries';
@@ -23,7 +24,7 @@ const BrasseriesPage = () => {
     error,
     pagination,
     searchBreweries,
-    loadMore,
+    setPage,
     refresh,
   } = useBreweries();
 
@@ -88,23 +89,33 @@ const BrasseriesPage = () => {
                 breweries={breweries}
                 loading={loading}
                 pagination={pagination}
-                onLoadMore={loadMore}
                 onRefresh={refresh}
                 onBrewerySelect={handleBrewerySelect}
               />
             ) : (
               <div className="h-[600px] lg:h-[700px]">
-                {/*<BreweryMap
-                  breweries={breweries}
+                <CarteBrasseries
+                  brasseries={breweries}
                   selectedBrewery={selectedBrewery}
                   onBrewerySelect={setSelectedBrewery}
                   loading={loading && breweries.length === 0}
-                />*/}
+                />
               </div>
             )}
           </div>
         </LoadingOverlay>
 
+        {/* Pagination */}
+        {breweries.length > 0 && (
+          <Pagination
+            page={pagination.page}
+            perPage={pagination.perPage}
+            total={pagination.total}
+            onPageChange={setPage}
+          />
+        )}
+
+        {/* Statistiques */}
         {breweries.length > 0 && (
           <div className="bg-card rounded-lg border p-6 shadow-soft">
             <h3 className="text-lg font-semibold text-foreground mb-4">

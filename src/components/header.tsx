@@ -27,19 +27,19 @@ export const Header = () => {
           <div className="hidden md:flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
               <a
-                href="https://documentation.recettes.gov"
+                href="https://api.openbrewerydb.org/breweries"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2"
               >
                 <BookText className="w-4 h-4" />
-                Documentation
+                Documentation API: OpenBreweryDB
               </a>
             </Button>
 
             <Button variant="ghost" size="sm" asChild>
               <a
-                href="https://github.com/"
+                href="https://github.com/Tsiaro05052004/site-de-brasseries.git"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2"
