@@ -16,6 +16,7 @@ Une application React interactive pour explorer les brasseries aux États-Unis e
 - [React js](https://reactjs.org/)
 - [Next js](https://nextjs.org/)
 - [Axios](https://axios-http.com/)
+- Shadcn
 - [React Leaflet](https://react-leaflet.js.org/)
 - [Leaflet](https://leafletjs.com/)
 - Tailwind 
